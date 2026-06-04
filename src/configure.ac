@@ -1,4 +1,6 @@
-K5_AC_INIT([aclocal.m4])
+m4_include([version.m4])
+AC_INIT(Kerberos 5, K5_VERSION, K5_BUGADDR, krb5)
+AC_CONFIG_SRCDIR([aclocal.m4])
 
 # If $runstatedir isn't set by autoconf (<2.70), set it manually.
 if test x"$runstatedir" = x; then
@@ -1149,8 +1151,8 @@ enable_pkinit=try)
 if test "$enable_pkinit" = yes || test "$enable_pkinit" = try; then
   AC_CACHE_CHECK(for a recent enough OpenSSL, k5_cv_openssl_version_okay,
 [AC_COMPILE_IFELSE([AC_LANG_SOURCE([#include <openssl/opensslv.h>
-#if OPENSSL_VERSION_NUMBER < 0x10000000L
-# error openssl is too old, need 1.0.0
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+# error openssl is too old, need 1.1.0
 #endif
 int i = 1;
 ])], k5_cv_openssl_version_okay=yes, k5_cv_openssl_version_okay=no)])

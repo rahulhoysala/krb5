@@ -80,6 +80,9 @@ getstringtime(krb5_timestamp);
 krb5_error_code
 berval2tl_data(struct berval *in, krb5_tl_data **out)
 {
+    if (in->bv_len < 2)
+        return EINVAL;
+
     *out = (krb5_tl_data *) malloc (sizeof (krb5_tl_data));
     if (*out == NULL)
         return ENOMEM;
@@ -637,7 +640,7 @@ tl_data2berval (krb5_tl_data *in, struct berval **out)
     }
 
     STORE16_INT((*out)->bv_val, in->tl_data_type);
-    memcpy ((*out)->bv_val + 2, in->tl_data_contents, in->tl_data_length);
+    k5memcpy((*out)->bv_val + 2, in->tl_data_contents, in->tl_data_length);
 
     return 0;
 }

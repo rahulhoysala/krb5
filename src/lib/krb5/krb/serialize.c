@@ -67,7 +67,7 @@ krb5_error_code KRB5_CALLCONV
 krb5_ser_pack_bytes(krb5_octet *ostring, size_t osize, krb5_octet **bufp, size_t *remainp)
 {
     if (*remainp >= osize) {
-        memcpy(*bufp, ostring, osize);
+        k5memcpy(*bufp, ostring, osize);
         *bufp += osize;
         *remainp -= osize;
         return(0);
@@ -106,6 +106,24 @@ krb5_ser_unpack_int64(int64_t *intp, krb5_octet **bufp, size_t *remainp)
     }
     else
         return(ENOMEM);
+}
+
+/* Unpack a 4-byte integer and verify that it is no larger than the number of
+ * remaining bytes. */
+krb5_error_code
+k5_ser_unpack_len(size_t *len_out, krb5_octet **bufp, size_t *remainp)
+{
+    krb5_error_code ret;
+    int32_t n;
+
+    *len_out = 0;
+    ret = krb5_ser_unpack_int32(&n, bufp, remainp);
+    if (ret)
+        return ret;
+    if (n < 0 || (size_t)n > *remainp)
+        return ENOMEM;
+    *len_out = n;
+    return 0;
 }
 
 /*

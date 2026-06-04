@@ -126,9 +126,11 @@ get_plugin_vtables(krb5_context context,
     *vtables_out = NULL;
     *n_tables_out = *n_systems_out = 0;
 
-    /* Auto-register encrypted challenge and (if possible) pkinit. */
+    /* Auto-register built-in modules. */
+#ifndef DISABLE_PKINIT
     k5_plugin_register_dyn(context, PLUGIN_INTERFACE_KDCPREAUTH, "pkinit",
                            "preauth");
+#endif
     k5_plugin_register_dyn(context, PLUGIN_INTERFACE_KDCPREAUTH, "otp",
                            "preauth");
     k5_plugin_register_dyn(context, PLUGIN_INTERFACE_KDCPREAUTH, "spake",
@@ -1384,6 +1386,8 @@ keyblock_equal(const krb5_keyblock *k1, const krb5_keyblock *k2)
         return FALSE;
     if (k1->length != k2->length)
         return FALSE;
+    if (k1->length == 0)
+        return TRUE;
     return memcmp(k1->contents, k2->contents, k1->length) == 0;
 }
 

@@ -1882,6 +1882,9 @@ krb5_ser_pack_int64(int64_t, krb5_octet **, size_t *);
 krb5_error_code KRB5_CALLCONV
 krb5_ser_unpack_int64(int64_t *, krb5_octet **, size_t *);
 
+krb5_error_code
+k5_ser_unpack_len(size_t *len_out, krb5_octet **bufp, size_t *remainp);
+
 /* [De]serialize byte string */
 krb5_error_code KRB5_CALLCONV
 krb5_ser_pack_bytes(krb5_octet *, size_t, krb5_octet **, size_t *);
@@ -2311,6 +2314,22 @@ k5memdup0(const void *in, size_t len, krb5_error_code *code)
     if (ptr != NULL && len > 0)
         memcpy(ptr, in, len);
     return ptr;
+}
+
+/* memcpy if len > 0, to avoid passing null pointers (which is undefined). */
+static inline void
+k5memcpy(void *dest, const void *src, size_t len)
+{
+    if (len > 0)
+        memcpy(dest, src, len);
+}
+
+/* memmove if len > 0, to avoid passing null pointers (which is undefined). */
+static inline void
+k5memmove(void *dest, const void *src, size_t len)
+{
+    if (len > 0)
+        memmove(dest, src, len);
 }
 
 /* Convert a krb5_timestamp to a time_t value, treating the negative range of
